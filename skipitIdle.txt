@@ -1,0 +1,121 @@
+Let's make a game!
+	name:Skipit Idle
+	by:Olge
+	desc:Första försök till ett skipitidlespel
+	created:7/4/2022
+	updated:7/4/2022
+	version:1
+
+Settings
+	tiling background:background.jpg
+	building cost increase:115%
+	building cost refund:50%
+	spritesheet:icons, 48 by 48, skipitIdleSprites.png
+	stylesheet:stuff/bigBlue.css
+
+Layout
+	use default
+		
+Buttons
+	*saltButton
+		name:Bli lite mer saltig
+		desc:Klicka här för att producera lite mer salt
+		on click:anim icon wobble
+		on click:yield 1 salt
+		on click:if (have goldenTouch and chance(1%)) yield 1 goldenSalt
+		icon:stuff/bunny.png
+		no text
+		class:bigButton hasFlares
+		icon class:shadowed
+		tooltip origin:bottom
+		tooltip class:red
+		
+Resources
+	*salt
+		name:Salt
+		desc:Det här är ditt salt.
+		icon:icons[0,0]
+		class:noBackground
+		show earned
+		
+	*goldenSalt
+		name:Guldigt salt
+		desc:Det här är guldsalt, mer exklusivt, lite saltigare.
+		icon:icons[0,1]
+		class:noBackground
+		hidden when 0
+		
+Shinies
+	*luckySalt
+		on click:log Woop
+		movement:onRight moveLeft fade bounce:0.05
+		frequency:60
+		frequency variation:30
+		icon:stuff/luckyBunny.png
+		class:bigButton
+		on click:
+			$boost=1
+			if (have clover) $boost=4
+			if (chance(25%))
+				//get at least 7, or between 1 and 3 minutes of our bunny production
+				$amount=max(7,random(bunnies:ps*60*1,bunnies:ps*60*3))*$boost
+				toast The lucky bunny grants you<//><b>[$amount] bunnies</b>.
+				yield $amount bunnies
+			else
+				$amount=1*$boost
+				toast The lucky bunny grants you<//><b>[$amount] golden carrot[s?$amount]</b>!
+				yield $amount goldenCarrot
+			end
+		end
+
+Buildings
+	*TEMPLATE
+		on click:anim glow
+		
+	*seglarskola|seglarskolor
+		name:Hugos Seglarskola|Hugos Seglarskolor
+		desc:Hugos Seglarskola, vi seglar på ett oändligt hav av salt.<//><b>Effekt:</b><.>Producerar 1 salt var 10 sekund.
+		icon:icons[1,0]
+		cost:15 salt
+		on tick:yield 0.1 salt
+		unlocked
+	
+	*sheriffen|sheriffar
+		name:Sheriffen|Sheriffar
+		desc:Det är jag schom äeäer schheriffen här i schtan<//><b>Effekt:</b><.>Producerar 1 salt var 2 sekunder.
+		icon:icons[1,1]
+		cost:100 salt
+		on tick:yield 0.5 salt
+		req:100 salt:earned
+	
+	
+	
+	//building upgrades
+	
+	*buildingUpgrade1
+		name:Döda havet
+		desc:Vi flyttar vår skola till döda havet, mer salt där!<//><b>Effekt:</b><.>seglarskolornas produktion x2
+		icon:icons[2,0] icons[3,0]
+		cost:1000 salt
+		passive:multiply yield of seglarskola by 2
+		req:(seglarskolor>=10)
+		
+		
+	//golden carrot upgrades
+	
+	*goldenTouch
+		name:Metaldetektor
+		desc:Med den här metaldetektorn kommer du kunna hitta guldsalt lättare!<//><b>Effect:</b><.>1% chans att få 1 guldsalt per saltklick
+		icon:icons[2,5]
+		cost:1 goldenSalt
+		req:1 goldenSalt:earned
+		
+Achievements
+	*TEMPLATE
+		on click:anim glow
+		
+	*saltAchiev1
+		name:Salt tillför smak till maten.
+		desc:Äg <b>1</b> salt.
+		req:1 salt
+		icon:icons[2,4] icons[0,2] icons[0,6]
